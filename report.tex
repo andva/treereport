@@ -28,7 +28,10 @@
 \usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
 \usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
 \usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+\usepackage{natbib} % nice citations
 % These packages are all incorporated in the memoir class to one degree or another...
+
+
 
 %%% HEADERS & FOOTERS
 \usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
@@ -59,13 +62,31 @@
 
 \begin{document}
 \maketitle
-
+\nocite{*}
 \section{Background}
+When modeling the growth of trees, their growth follows a specific procedure that can be modeled.
+The system is called a fractal and is a natural phenomenon where the same pattern repeats itself at different scales.
+The smallest branch of a tree looks like a tree itself.
+But even if a tree follows these rules, it will also take other things, like the amount of sun the leaves can absorb, water supply into consideration when deciding the fate of each branch and the whole tree.
+This makes it so that when observing a real tree, the features of a fractal pattern is somewhat visible but it is hidden behind the fate of the tree as it has grown.
+If these are taken into consideration when creating the fractal pattern of the tree, it will look fileclose to a real tree.
+
+When simulating the growth of a tree, it is important to define a couple terms that helps when describing the different steps of the growth procedure.
+The point where leafs are attached to a stem are called \emph{nodes}.
+The part of the stem between two nodes are called an \emph{internode}.
+An internode, connected leafs and bud is a \emph{metamer}.
+\ref{Palubicki}
 
 \section{Implementation}
+The model was implemented in C++ using OpenGL and GLSL for both computation and rendering.
+It follows the report by \citet{Palubicki} where 
 
+ 
 \section{Results}
 
-\section{conclusions}
+\section{Conclusions}
+
+\bibliographystyle{abbrv}
+\bibliography{report}
 
 \end{document}
