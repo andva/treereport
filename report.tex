@@ -105,8 +105,14 @@ The vertex shader outputs the texture coordinates as positions but also sends th
 These are then used as input to several noise functions that generates a diffuse map, normal map and displacement map of the tree bark.
 
 The tree is rendered using a tesselation shader that use the displacement map to offset the generated vertices to their correct location.
-The result is then drawn to the GBuffer.
 The displacement can be scaled using a uniform.
+The result is then drawn to the GBuffer using the diffuse and the normal texture to produce the final output.
+
+Leafs are produced in a similar fashion using the position of the metamers and the branch directions.
+The direction of the leafs are decided by weighing the gravity direction together with the branch direction to find the direction of the leaf.
+This is done within a compute shader and results in a vertex buffer containing all leafs.
+Leafs are created using simple geometry consisting of only two triangles.
+
 
 \section{Results}
 
