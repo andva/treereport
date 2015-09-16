@@ -81,7 +81,32 @@ An internode, connected leafs and bud is a \emph{metamer}.
 The model was implemented in C++ using OpenGL and GLSL for both computation and rendering.
 It follows the report by \citet{Palubicki} where 
 
- 
+\subsection{Growing}
+The growing is done in several steps btere the environment is checked to find the optimal growth direction for each branch of the tree.
+
+\subsection{rendering}
+To be able to visualize the tree and to produce an outut as squickly as possible, shaders were used to produce a model.
+As the tree are done calculating the new state, the collection of branches are sent to the renderer.
+The renderer converts the tree data to a buffer of packed data and uploads it to a compute shader.
+The compute shader is responsible for converting the input data consisting of branch start points, end points and the width of the branch in each edge into quads.
+The amount of quads generated gets decided by an input uniform.
+The compute shader also calculates the normal and the texture coordinates for each branch.
+
+The position of the faces belonging to each branch is calculated by extracting a vector that is perpendicular to the direction of the branch.
+The second edge of the quad is calculated by rotating the positoin around the branch axis by an ammount so that all of the quads covers the full 360 degrees.
+Normals are recieved from the direction from the axis to each point.
+
+Texture coordinates are calculated using three different lods depending on the width of the branch.
+The texture ID is stored together with the texture coordinate and to make sure that each branch recieves an unique set of texture coordinates three atomic integers are used to give out positions in the texture map.
+This saces a lot of texture space and allows for higher quality in the branches where it is useful.
+
+The computed tree branches are then used to generate the texture map an a second shader pair consisting of a vertex shader and a fragment shader.
+The vertex shader outputs the texture coordinates as positions but also sends the world position of each fragment.
+These are then used as input to several noise functions that generates a diffuse map, normal map and displacement map of the tree bark.
+
+
+Normals are calculated from the 
+
 \section{Results}
 
 \section{Conclusions}
