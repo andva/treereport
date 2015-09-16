@@ -104,8 +104,9 @@ The computed tree branches are then used to generate the texture map an a second
 The vertex shader outputs the texture coordinates as positions but also sends the world position of each fragment.
 These are then used as input to several noise functions that generates a diffuse map, normal map and displacement map of the tree bark.
 
-
-Normals are calculated from the 
+The tree is rendered using a tesselation shader that use the displacement map to offset the generated vertices to their correct location.
+The result is then drawn to the GBuffer.
+The displacement can be scaled using a uniform.
 
 \section{Results}
 
