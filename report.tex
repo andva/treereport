@@ -69,7 +69,7 @@ The system is called a fractal and is a natural phenomenon where the same patter
 The smallest branch of a tree looks like a tree itself.
 But even if a tree follows these rules, it will also take other things, like the amount of sun the leaves can absorb, water supply into consideration when deciding the fate of each branch and the whole tree.
 This makes it so that when observing a real tree, the features of a fractal pattern is somewhat visible but it is hidden behind the fate of the tree as it has grown.
-If these are taken into consideration when creating the fractal pattern of the tree, it will look fileclose to a real tree.
+If these are taken into consideration when creating the fractal pattern of the tree, it will look close to a real tree.
 
 When simulating the growth of a tree, it is important to define a couple terms that helps when describing the different steps of the growth procedure.
 The point where leafs are attached to a stem are called \emph{nodes}.
@@ -79,13 +79,16 @@ An internode, connected leafs and bud is a \emph{metamer}.
 
 \section{Implementation}
 The model was implemented in C++ using OpenGL and GLSL for both computation and rendering.
-It follows the report by \citet{Palubicki} where 
+It follows the report by \citet{Palubicki} where the tree is grown from the current buds while taking the environment in consideration.
+
 
 \subsection{Growing}
-The growing is done in several steps btere the environment is checked to find the optimal growth direction for each branch of the tree.
+The growing is done in several steps where the environment is checked to find the optimal growth direction for each branch of the tree.
+
+The first step is to 
 
 \subsection{rendering}
-To be able to visualize the tree and to produce an outut as squickly as possible, shaders were used to produce a model.
+To be able to visualize the tree and to produce an output as quickly as possible, shaders were used to produce a model.
 As the tree are done calculating the new state, the collection of branches are sent to the renderer.
 The renderer converts the tree data to a buffer of packed data and uploads it to a compute shader.
 The compute shader is responsible for converting the input data consisting of branch start points, end points and the width of the branch in each edge into quads.
@@ -93,18 +96,20 @@ The amount of quads generated gets decided by an input uniform.
 The compute shader also calculates the normal and the texture coordinates for each branch.
 
 The position of the faces belonging to each branch is calculated by extracting a vector that is perpendicular to the direction of the branch.
-The second edge of the quad is calculated by rotating the positoin around the branch axis by an ammount so that all of the quads covers the full 360 degrees.
-Normals are recieved from the direction from the axis to each point.
+The second edge of the quad is calculated by rotating the position around the branch axis by an amount so that all of the quads covers the full 360 degrees.
+Normals are received from the direction from the axis to each point.
 
-Texture coordinates are calculated using three different lods depending on the width of the branch.
-The texture ID is stored together with the texture coordinate and to make sure that each branch recieves an unique set of texture coordinates three atomic integers are used to give out positions in the texture map.
-This saces a lot of texture space and allows for higher quality in the branches where it is useful.
+Texture coordinates are calculated using three different LODs depending on the width of the branch.
+The texture ID is stored together with the texture coordinate and to make sure that each branch receives an unique set of texture coordinates three atomic integers are used to give out positions in the texture map.
+This causes a lot of texture space and allows for higher quality in the branches where it is useful.
 
-The computed tree branches are then used to generate the texture map an a second shader pair consisting of a vertex shader and a fragment shader.
+The computed tree branches are then used to generate the texture map and a second shader pair consisting of a vertex shader and a fragment shader.
 The vertex shader outputs the texture coordinates as positions but also sends the world position of each fragment.
 These are then used as input to several noise functions that generates a diffuse map, normal map and displacement map of the tree bark.
 
-The tree is rendered using a tesselation shader that use the displacement map to offset the generated vertices to their correct location.
+
+
+The tree is rendered using a tessellation shader that use the displacement map to offset the generated vertices to their correct location.
 The displacement can be scaled using a uniform.
 The result is then drawn to the GBuffer using the diffuse and the normal texture to produce the final output.
 
@@ -112,6 +117,7 @@ Leafs are produced in a similar fashion using the position of the metamers and t
 The direction of the leafs are decided by weighing the gravity direction together with the branch direction to find the direction of the leaf.
 This is done within a compute shader and results in a vertex buffer containing all leafs.
 Leafs are created using simple geometry consisting of only two triangles.
+
 
 
 \section{Results}
