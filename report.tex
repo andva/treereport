@@ -94,26 +94,39 @@ When evaluating available space, available points within the perception volume a
 By summarizing the direction towards each of them, a optimal growth direction is found.
 When adding new points, the points within the occupancy zone are consumed.
 
-Shadow propagation a voxel grid describing the amount of light that reaches a point in space.
-Each new bud that  is added to the tree adds shadows in a cone away from the light position.
-Using the grid, it is possible to calculate the light exposure in a voxel.
-The optimal growth direction is calculated as the negative gradient of the shadow value.
+\subsection{rendering}
+To be able to visualize the tree and to produce an output as quickly as possible, shaders were used to produce a model.
+As the tree are done calculating the new state, the collection of branches are sent to the renderer.
+The renderer converts the tree data to a buffer of packed data and uploads it to a compute shader.
+The compute shader is responsible for converting the input data consisting of branch start points, end points and the width of the branch in each edge into quads.
+The amount of quads generated gets decided by an input uniform.
+The compute shader also calculates the normal and the texture coordinates for each branch.
+
+The position of the faces belonging to each branch is calculated by extracting a vector that is perpendicular to the direction of the branch.
+The second edge of the quad is calculated by rotating the position around the branch axis by an amount so that all of the quads covers the full 360 degrees.
+Normals are received from the direction from the axis to each point.
+
+Texture coordinates are calculated using three different LODs depending on the width of the branch.
+The texture ID is stored together with the texture coordinate and to make sure that each branch receives an unique set of texture coordinates three atomic integers are used to give out positions in the texture map.
+This causes a lot of texture space and allows for higher quality in the branches where it is useful.
+
+The computed tree branches are then used to generate the texture map and a second shader pair consisting of a vertex shader and a fragment shader.
+The vertex shader outputs the texture coordinates as positions but also sends the world position of each fragment.
+These are then used as input to several noise functions that generates a diffuse map, normal map and displacement map of the tree bark.
 
 
-\subsubsection{Bud fate}
-The bud fate is connected to the amount of light that reaches that bud.
-If no light reaches a bud, it is deemed as a liability and is therefore terminated.
+
+The tree is rendered using a tessellation shader that use the displacement map to offset the generated vertices to their correct location.
+The displacement can be scaled using a uniform.
+The result is then drawn to the GBuffer using the diffuse and the normal texture to produce the final output.
+
+Leafs are produced in a similar fashion using the position of the metamers and the branch directions.
+The direction of the leafs are decided by weighing the gravity direction together with the branch direction to find the direction of the leaf.
+This is done within a compute shader and results in a vertex buffer containing all leafs.
+Leafs are created using simple geometry consisting of only two triangles.
 
 
-\subsubsection{Appending new shoots}
 
-\subsubsection{Shredding branches}
-
-\subsubsection{Updating branch widths}
-
-\subsection{Rendering}
-
- 
 \section{Results}
 
 \section{Conclusions}
