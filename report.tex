@@ -94,7 +94,13 @@ When evaluating available space, available points within the perception volume a
 By summarizing the direction towards each of them, a optimal growth direction is found.
 When adding new points, the points within the occupancy zone are consumed.
 
-\subsection{rendering}
+\subsubsection{Bud fate}
+
+\subsubsection{Shoots creation}
+
+\subsubsection{Branch width}
+
+\subsection{Rendering}
 To be able to visualize the tree and to produce an output as quickly as possible, shaders were used to produce a model.
 As the tree are done calculating the new state, the collection of branches are sent to the renderer.
 The renderer converts the tree data to a buffer of packed data and uploads it to a compute shader.
