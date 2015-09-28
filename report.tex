@@ -89,10 +89,15 @@ Due to time constraints, all of the described methods has not been implemented i
 The presented method starts with environmental input where the environment around each existing bud is examined to determine the state for those parts of the tree.
 \citet{Palubicki} presents two different techniques for handling the availability of growth in space around the tree and the optimal growth direction for branches.
 One is called \emph{space colonization} and the other is called \emph{shadow propagation}.
+
 Space colonization uses a uniform distribution of points in the world, each bud has an occupancy zone as well as a perception volume.
 When evaluating available space, available points within the perception volume are found.
 By summarizing the direction towards each of them, a optimal growth direction is found.
 When adding new points, the points within the occupancy zone are consumed.
+
+Shadow propagation uses a voxel grid to keep track of the environment around each bud.
+Each newly formed bud adds a shadow value to the voxel grid in a pyramid below it with a shadow value that propagates to the voxels underneath.
+This imitates a prenumbra shadow from each bud and as the shadow value increases, the probability for growth towards that specific voxel decreases.
 
 \subsubsection{Bud fate}
 
