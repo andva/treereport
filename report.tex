@@ -102,12 +102,17 @@ This imitates a prenumbra shadow from each bud and as the shadow value increases
 Optimal directions are calculated by finding the gradient of the shadow grid in the bud point to make it grow towards the direction where there is the most light.
 
 \subsubsection{Bud fate}
+The technique that were implemented is an extension to the Borchet-Honda model that is described in \citet{Pablucki}.
 The bud fate is decided using the shadow value retrieved from the environmental input calculation for each bud.
+This value is then distributed towards the light accumalative producing the total light reached to each branch and its child branches.
 
+The number of metamers produced by the bud is calculated as the light value floored and the length of the branch is the light value divided by the number of metamers.
 
 \subsubsection{Shoots creation}
 
 \subsubsection{Branch width}
+The branch width is calculated by adding width back towards the root from the end branches of the tree.
+This requires that shred branches are stored so that the width of the tree does not change in width as branches are removed.
 
 \subsection{Rendering}
 To be able to visualize the tree and to produce an output as quickly as possible, shaders were used to produce a model.
@@ -128,8 +133,6 @@ This causes a lot of texture space and allows for higher quality in the branches
 The computed tree branches are then used to generate the texture map and a second shader pair consisting of a vertex shader and a fragment shader.
 The vertex shader outputs the texture coordinates as positions but also sends the world position of each fragment.
 These are then used as input to several noise functions that generates a diffuse map, normal map and displacement map of the tree bark.
-
-
 
 The tree is rendered using a tessellation shader that use the displacement map to offset the generated vertices to their correct location.
 The displacement can be scaled using a uniform.
