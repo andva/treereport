@@ -94,12 +94,16 @@ Space colonization uses a uniform distribution of points in the world, each bud 
 When evaluating available space, available points within the perception volume are found.
 By summarizing the direction towards each of them, a optimal growth direction is found.
 When adding new points, the points within the occupancy zone are consumed.
+A binary shadow value is also provided that is zero when no points are available and one when points were found.
 
 Shadow propagation uses a voxel grid to keep track of the environment around each bud.
 Each newly formed bud adds a shadow value to the voxel grid in a pyramid below it with a shadow value that propagates to the voxels underneath.
 This imitates a prenumbra shadow from each bud and as the shadow value increases, the probability for growth towards that specific voxel decreases.
+Optimal directions are calculated by finding the gradient of the shadow grid in the bud point to make it grow towards the direction where there is the most light.
 
 \subsubsection{Bud fate}
+The bud fate is decided using the shadow value retrieved from the environmental input calculation for each bud.
+
 
 \subsubsection{Shoots creation}
 
