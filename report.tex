@@ -58,7 +58,7 @@
 \title{Procedurally grown trees}
 \author{Andreas Valter}
 %\date{} % Activate to display a given date or no date (if empty),
-         % otherwise the current date is printed 
+         % otherwise the current date is printed
 
 \begin{document}
 \maketitle
@@ -109,6 +109,9 @@ This value is then distributed towards the light accumalative producing the tota
 The number of metamers produced by the bud is calculated as the light value floored and the length of the branch is the light value divided by the number of metamers.
 
 \subsubsection{Shoots creation}
+The bud fate decides what shoots to add and their length.
+Metamers are added in an iterative fashion to the branches represented as a binary tree.
+Each branch has two childs, the terminal and the lateral branch.
 
 \subsubsection{Branch width}
 The branch width is calculated by adding width back towards the root from the end branches of the tree.
@@ -142,8 +145,7 @@ Leafs are produced in a similar fashion using the position of the metamers and t
 The direction of the leafs are decided by weighing the gravity direction together with the branch direction to find the direction of the leaf.
 This is done within a compute shader and results in a vertex buffer containing all leafs.
 Leafs are created using simple geometry consisting of only two triangles.
-
-
+The color is selected as different shades of green using the world position as lookup and a noise function to offset the value.
 
 \section{Results}
 
