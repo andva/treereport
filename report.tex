@@ -100,6 +100,8 @@ Shadow propagation uses a voxel grid to keep track of the environment around eac
 Each newly formed bud adds a shadow value to the voxel grid in a pyramid below it with a shadow value that propagates to the voxels underneath.
 This imitates a prenumbra shadow from each bud and as the shadow value increases, the probability for growth towards that specific voxel decreases.
 Optimal directions are calculated by finding the gradient of the shadow grid in the bud point to make it grow towards the direction where there is the most light.
+When bud points are not contained within the grid, the size of the grid is doubled in that direction until the resized grid covers the point.
+The data from the previous grid are copied into the resized grid together with the data from the new bud point.
 
 \subsubsection{Bud fate}
 The technique that were implemented is an extension to the Borchet-Honda model that is described in \citet{Pablucki}.
@@ -149,7 +151,14 @@ The color is selected as different shades of green using the world position as l
 
 \section{Results}
 
+
 \section{Conclusions}
+
+
+
+The speed of the tree generation could be increased using a octree structure for handling the grid, this would make it faster to increase the size of the grid while keeping the size of the grid smaller because it is a sparse structure that only keeps data for filled voxels.
+And just as it is for real trees, computer generated trees are mostly air or empty voxels.
+
 
 \bibliographystyle{abbrv}
 \bibliography{report}
