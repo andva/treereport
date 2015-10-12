@@ -19,6 +19,9 @@
 % \geometry{landscape} % set up the page for landscape
 %   read geometry.pdf for detailed page layout information
 
+\usepackage{caption}
+\usepackage{hyperref}
+
 \usepackage{graphicx} % support the \includegraphics command and options
 
 % \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
@@ -150,6 +153,18 @@ Leafs are created using simple geometry consisting of only two triangles.
 The color is selected as different shades of green using the world position as lookup and a noise function to offset the value.
 
 \section{Results}
+When running the application, the growth of the tree is displayed in the application view port.
+As the tree grows, leafs are dynamically added and moves as touched by a breeze.
+\autoref{fig:res_1tree} shows a screen capture of a single tree grown over 20 growth cycles.
+The tree structure is thicker at the top part of the tree due 
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.4\textwidth]{1tree.png}
+	\caption{Single grown tree using the extended BH bud fate model.}
+	\label{fig:res_1tree}
+\end{figure}
+
 
 
 \section{Conclusions}
