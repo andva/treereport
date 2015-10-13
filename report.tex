@@ -156,7 +156,16 @@ The color is selected as different shades of green using the world position as l
 When running the application, the growth of the tree is displayed in the application view port.
 As the tree grows, leafs are dynamically added and moves as touched by a breeze.
 \autoref{fig:res_1tree} shows a screen capture of a single tree grown over 20 growth cycles.
-The tree structure is thicker at the top part of the tree due 
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.4\textwidth]{1tree.png}
+	\caption{Single grown tree using the extended BH bud fate model.}
+	\label{fig:res_1tree}
+\end{figure}
+
+The total time to grow the tree was 138ms and most of that time was spent adding points to the voxel grid.
+This is visualized in \autoref{fig:res_timingTotal} where the total time per growth cycle is shown and divided into the required steps performed when generating the tree.
 
 \begin{figure}[htp]
 	\centering
@@ -167,8 +176,10 @@ The tree structure is thicker at the top part of the tree due
 
 
 
-\section{Conclusions}
 
+\section{Conclusions}
+The tree structure is thicker at the top part of the tree because of the shadow grid that shreds branches that shadowed by overlying branches.
+The extended BH model for bud fate is visible in 
 
 
 The speed of the tree generation could be increased using a octree structure for handling the grid, this would make it faster to increase the size of the grid while keeping the size of the grid smaller because it is a sparse structure that only keeps data for filled voxels.
