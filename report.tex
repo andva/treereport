@@ -120,6 +120,7 @@ Each branch has two childs, the terminal and the lateral branch.
 
 \subsubsection{Branch width}
 The branch width is calculated by adding width back towards the root from the end branches of the tree.
+
 This requires that shred branches are stored so that the width of the tree does not change in width as branches are removed.
 
 \subsection{Rendering}
@@ -169,18 +170,21 @@ This is visualized in \autoref{fig:res_timingTotal} where the total time per gro
 
 \begin{figure}[htp]
 	\centering
-	\includegraphics[width=0.4\textwidth]{1tree.png}
-	\caption{Single grown tree using the extended BH bud fate model.}
-	\label{fig:res_1tree}
+	\includegraphics[width=0.4\textwidth]{2tree.png}
+	\caption{Two grown tree using the extended BH bud fate model.}
+	\label{fig:res_2tree}
 \end{figure}
 
-
+\autoref{fig:res_2tree} shows the same algorithm operating on two trees growing at the same time sharing grid.
 
 
 \section{Conclusions}
 The tree structure is thicker at the top part of the tree because of the shadow grid that shreds branches that shadowed by overlying branches.
-The extended BH model for bud fate is visible in 
+That the extended BH model makes it almost impossible to create a main terminal branch in the tree pointing upwards.
+This results in a lot wider trees that always has a branch at the begining.
+By implementing the pirority bud fate model, the main branch could be prioritized, resulting in a tree more distinct tree shape with a thick terminal branch and smaller branches pointing out from it.
 
+As can be seen in \autoref{fig:res_2tree}, the algorithm succesfully handles dynamic growth of several trees that interact with each other without intersections.
 
 The speed of the tree generation could be increased using a octree structure for handling the grid, this would make it faster to increase the size of the grid while keeping the size of the grid smaller because it is a sparse structure that only keeps data for filled voxels.
 And just as it is for real trees, computer generated trees are mostly air or empty voxels.
