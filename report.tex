@@ -202,6 +202,9 @@ As can be seen in \autoref{fig:res_2tree}, the algorithm succesfully handles dyn
 The speed of the tree generation could be increased using a octree structure for handling the grid, this would make it faster to increase the size of the grid while keeping the size of the grid smaller because it is a sparse structure that only keeps data for filled voxels.
 And just as it is for real trees, computer generated trees are mostly air or empty voxels.
 
+The quality of the textures could be increased by using a set of generated 2d textures for each branch and interpolate them between branches using weights in the joints.
+Using several lods for the textures makes it possible to have a high quality of each tree while keeping them unique.
+But they suffer from running out of texture space when the tree grows big enough.
 
 \bibliographystyle{abbrv}
 \bibliography{report}
