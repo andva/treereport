@@ -74,12 +74,12 @@ When simulating the growth of a tree, it is important to define a couple terms t
 The point where leafs are attached to a stem are called \emph{nodes}.
 The part of the stem between two nodes are called an \emph{inter-node}.
 An inter-node, connected leafs and bud is a \emph{metamer}.
-\ref{Palubicki}
+\ref{palubicki}
 
 \section{Implementation}
 The model was implemented in C++ using OpenGL and GLSL for both computation and rendering.
-It follows the report by \citet{Palubicki} that describes a method for creating self-organizing trees.
-\citet{Palubicki} describes a general outline of the method they present, as well as several alternatives for the steps that makes up for the total algorithm.
+It follows the report by \citet{palubicki} that describes a method for creating self-organizing trees.
+\citet{palubicki} describes a general outline of the method they present, as well as several alternatives for the steps that makes up for the total algorithm.
 Due to time constraints, all of the described methods has not been implemented in this report.
 
 \subsection{Tree generation}
@@ -87,7 +87,7 @@ Due to time constraints, all of the described methods has not been implemented i
 
 \subsubsection{Environmental input}
 The presented method starts with environmental input where the environment around each existing bud is examined to determine the state for those parts of the tree.
-\citet{Palubicki} presents two different techniques for handling the availability of growth in space around the tree and the optimal growth direction for branches.
+\citet{palubicki} presents two different techniques for handling the availability of growth in space around the tree and the optimal growth direction for branches.
 One is called \emph{space colonization} and the other is called \emph{shadow propagation}.
 
 Space colonization uses a uniform distribution of points in the world, each bud has an occupancy zone as well as a perception volume.
@@ -102,7 +102,7 @@ This imitates a prenumbra shadow from each bud and as the shadow value increases
 Optimal directions are calculated by finding the gradient of the shadow grid in the bud point to make it grow towards the direction where there is the most light.
 
 \subsubsection{Bud fate}
-The technique that were implemented is an extension to the Borchet-Honda model that is described in \citet{Pablucki}.
+The technique that were implemented is an extension to the Borchet-Honda model that is described in \citet{palubicki}.
 The bud fate is decided using the shadow value retrieved from the environmental input calculation for each bud.
 This value is then distributed towards the light accumalative producing the total light reached to each branch and its child branches.
 
