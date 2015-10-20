@@ -19,6 +19,9 @@
 % \geometry{landscape} % set up the page for landscape
 %   read geometry.pdf for detailed page layout information
 
+\usepackage{caption}
+\usepackage{hyperref}
+
 \usepackage{graphicx} % support the \includegraphics command and options
 
 % \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
@@ -100,6 +103,8 @@ Shadow propagation uses a voxel grid to keep track of the environment around eac
 Each newly formed bud adds a shadow value to the voxel grid in a pyramid below it with a shadow value that propagates to the voxels underneath.
 This imitates a prenumbra shadow from each bud and as the shadow value increases, the probability for growth towards that specific voxel decreases.
 Optimal directions are calculated by finding the gradient of the shadow grid in the bud point to make it grow towards the direction where there is the most light.
+When bud points are not contained within the grid, the size of the grid is doubled in that direction until the resized grid covers the point.
+The data from the previous grid are copied into the resized grid together with the data from the new bud point.
 
 \subsubsection{Bud fate}
 The technique that were implemented is an extension to the Borchet-Honda model that is described in \citet{palubicki}.
@@ -115,6 +120,7 @@ Each branch has two childs, the terminal and the lateral branch.
 
 \subsubsection{Branch width}
 The branch width is calculated by adding width back towards the root from the end branches of the tree.
+
 This requires that shred branches are stored so that the width of the tree does not change in width as branches are removed.
 
 \subsection{Rendering}
@@ -148,8 +154,57 @@ Leafs are created using simple geometry consisting of only two triangles.
 The color is selected as different shades of green using the world position as lookup and a noise function to offset the value.
 
 \section{Results}
+When running the application, the growth of the tree is displayed in the application view port.
+As the tree grows, leafs are dynamically added and moves as touched by a breeze.
+\autoref{fig:res_1tree} shows a screen capture of a single tree grown over 20 growth cycles.
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.4\textwidth]{1tree.png}
+	\caption{Single grown tree using the extended BH bud fate model.}
+	\label{fig:res_1tree}
+\end{figure}
+
+The total time to grow the tree was 138ms and most of that time was spent adding points to the voxel grid.
+This is visualized in \autoref{fig:res_timingTotal} where the total time per growth cycle is shown and divided into the required steps performed when generating the tree.
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.4\textwidth]{2tree.png}
+	\caption{Two grown tree using the extended BH bud fate model.}
+	\label{fig:res_2tree}
+\end{figure}
+
+\autoref{fig:res_2tree} shows the same algorithm operating on two trees growing at the same time sharing grid.
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{timingTotal.png}
+	\caption{Total simulation time per growth stage for a tree.}
+	\label{fig:res_timingTotal}
+\end{figure}
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{timingBranchShred.png}
+	\caption{Branch shredding on the .}
+	\label{fig:res_timingTotal}
+\end{figure}
 
 \section{Conclusions}
+The tree structure is thicker at the top part of the tree because of the shadow grid that shreds branches that shadowed by overlying branches.
+That the extended BH model makes it almost impossible to create a main terminal branch in the tree pointing upwards.
+This results in a lot wider trees that always has a branch at the begining.
+By implementing the pirority bud fate model, the main branch could be prioritized, resulting in a tree more distinct tree shape with a thick terminal branch and smaller branches pointing out from it.
+
+As can be seen in \autoref{fig:res_2tree}, the algorithm succesfully handles dynamic growth of several trees that interact with each other without intersections.
+
+The speed of the tree generation could be increased using a octree structure for handling the grid, this would make it faster to increase the size of the grid while keeping the size of the grid smaller because it is a sparse structure that only keeps data for filled voxels.
+And just as it is for real trees, computer generated trees are mostly air or empty voxels.
+
+The quality of the textures could be increased by using a set of generated 2d textures for each branch and interpolate them between branches using weights in the joints.
+Using several lods for the textures makes it possible to have a high quality of each tree while keeping them unique.
+But they suffer from running out of texture space when the tree grows big enough.
 
 \bibliographystyle{abbrv}
 \bibliography{report}
