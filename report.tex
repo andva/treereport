@@ -80,13 +80,15 @@ An inter-node, connected leafs and bud is a \emph{metamer}.
 \ref{palubicki}
 
 \section{Implementation}
-The model was implemented in C++ using OpenGL and GLSL for both computation and rendering.
-It follows the report by \citet{palubicki} that describes a method for creating self-organizing trees.
+The implementationfollows the report by \citet{palubicki} that describes a method for creating self-organizing trees.
 \citet{palubicki} describes a general outline of the method they present, as well as several alternatives for the steps that makes up for the total algorithm.
 Due to time constraints, all of the described methods has not been implemented in this report.
+This report describes the implemented extension for fast generation of tree surfaces and textures.
 
 \subsection{Tree generation}
-
+The tree is generated on the CPU using a multithreaded approach in critical parts of the implementation.
+Growth is handled in several steps that uses the environment together with existing buds to determine the state of the tree after the current growth cycle.
+This allows for a dynamic and procedural growth producing unique trees over time.
 
 \subsubsection{Environmental input}
 The presented method starts with environmental input where the environment around each existing bud is examined to determine the state for those parts of the tree.
@@ -128,8 +130,7 @@ To be able to visualize the tree and to produce an output as quickly as possible
 As the tree are done calculating the new state, the collection of branches are sent to the renderer.
 The renderer converts the tree data to a buffer of packed data and uploads it to a compute shader.
 The compute shader is responsible for converting the input data consisting of branch start points, end points and the width of the branch in each edge into quads.
-The amount of quads generated gets decided by an input uniform.
-The compute shader also calculates the normal and the texture coordinates for each branch.
+The amount of quads generated gets decided by an input uniform and produces that number of quads, complete with texture coordinates, positions and normals.
 
 The position of the faces belonging to each branch is calculated by extracting a vector that is perpendicular to the direction of the branch.
 The second edge of the quad is calculated by rotating the position around the branch axis by an amount so that all of the quads covers the full 360 degrees.
@@ -144,19 +145,12 @@ The vertex shader outputs the texture coordinates as positions but also sends th
 These are then used as input to several noise functions that generates a diffuse map, normal map and displacement map of the tree bark.
 
 The tree is rendered using a tessellation shader that use the displacement map to offset the generated vertices to their correct location.
-The displacement can be scaled using a uniform.
 The result is then drawn to the GBuffer using the diffuse and the normal texture to produce the final output.
 
 Leafs are produced in a similar fashion using the position of the metamers and the branch directions.
 The direction of the leafs are decided by weighing the gravity direction together with the branch direction to find the direction of the leaf.
-This is done within a compute shader and results in a vertex buffer containing all leafs.
-Leafs are created using simple geometry consisting of only two triangles.
+This is done within a compute shader and results in a vertex buffer containing all leafs described as simple geometry consisting of only two triangles.
 The color is selected as different shades of green using the world position as lookup and a noise function to offset the value.
-
-\section{Results}
-When running the application, the growth of the tree is displayed in the application view port.
-As the tree grows, leafs are dynamically added and moves as touched by a breeze.
-\autoref{fig:res_1tree} shows a screen capture of a single tree grown over 20 growth cycles.
 
 \begin{figure}[htp]
 	\centering
@@ -165,17 +159,20 @@ As the tree grows, leafs are dynamically added and moves as touched by a breeze.
 	\label{fig:res_1tree}
 \end{figure}
 
-The total time to grow the tree was 138ms and most of that time was spent adding points to the voxel grid.
-This is visualized in \autoref{fig:res_timingTotal} where the total time per growth cycle is shown and divided into the required steps performed when generating the tree.
+\section{Results}
+When running the application, the growth of the tree is displayed in the application view port.
+As the tree grows, leafs are dynamically added and moves as touched by a breeze.
+\autoref{fig:res_1tree} shows a screen capture of a single tree grown over 20 growth cycles.
 
-\begin{figure}[htp]
+\begin{figure}[!htp]
 	\centering
 	\includegraphics[width=0.4\textwidth]{2tree.png}
 	\caption{Two grown tree using the extended BH bud fate model.}
 	\label{fig:res_2tree}
 \end{figure}
 
-\autoref{fig:res_2tree} shows the same algorithm operating on two trees growing at the same time sharing grid.
+The total time to grow the tree was 138ms and most of that time was spent adding points to the voxel grid.
+This is visualized in \autoref{fig:res_timingTotal} where the total time per growth cycle is shown and divided into the required steps performed when generating the tree.
 
 \begin{figure}[htp]
 	\centering
@@ -184,12 +181,7 @@ This is visualized in \autoref{fig:res_timingTotal} where the total time per gro
 	\label{fig:res_timingTotal}
 \end{figure}
 
-\begin{figure}[htp]
-	\centering
-	\includegraphics[width=0.8\textwidth]{timingBranchShred.png}
-	\caption{Branch shredding on the .}
-	\label{fig:res_timingTotal}
-\end{figure}
+\autoref{fig:res_2tree} shows the same algorithm operating on two trees growing at the same time sharing grid.
 
 \section{Conclusions}
 The tree structure is thicker at the top part of the tree because of the shadow grid that shreds branches that shadowed by overlying branches.
@@ -207,6 +199,13 @@ Using several lods for the textures makes it possible to have a high quality of 
 But they suffer from running out of texture space when the tree grows big enough.
 At the same time each tree could generate their own set of base textures that are randomly used between tree branches of the same tree.
 This would result in unique trees that still keep the detail at a high level.
+
+More work has to be made to make sure that branches are kept connected as their width increases.
+As it is now, when two branches with a large angular difference are rendered, a hole is noticeable in the seam.
+This could be resolved using the angle between the two branches when calculating quad positions to take this fact into consideration.
+A simple method could be to apply a scaled offset in the direction of the branch depending on the width of the branch but this could either introduce artefacts where branches intersect too much or still leave a gap.
+
+Because shred branch positions are kept it would be possible to add textures for shredded branches showing the interior of the tree to visualize that shredding has occured.
 
 \bibliographystyle{abbrv}
 \bibliography{report}
