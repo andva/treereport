@@ -65,6 +65,13 @@
 
 \begin{document}
 \maketitle
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.4\textwidth]{manytree.png}
+	%\caption{A bunch of trees generated with the algorithm described in this report.}
+	\label{fig:asd}
+\end{figure}
+
 \section{Background}
 When modelling the growth of trees, their growth follows a specific procedure that can be modelled.
 The system is called a fractal and is a natural phenomenon where the same pattern repeats itself at different scales.
@@ -77,13 +84,13 @@ When simulating the growth of a tree, it is important to define a couple terms t
 The point where leafs are attached to a stem are called \emph{nodes}.
 The part of the stem between two nodes are called an \emph{inter-node}.
 An inter-node, connected leafs and bud is a \emph{metamer}.
-\ref{palubicki}
+\cite{Palubicki:2009:STM:1531326.1531364}
 
 \section{Implementation}
-The implementationfollows the report by \citet{palubicki} that describes a method for creating self-organizing trees.
-\citet{palubicki} describes a general outline of the method they present, as well as several alternatives for the steps that makes up for the total algorithm.
+The implementation follows the report by Pablucki et al. \cite{Palubicki:2009:STM:1531326.1531364} that describes a method for creating self-organizing trees.
+It describes a general outline of the method they present, as well as several alternatives for the steps that makes up for the total algorithm.
 Due to time constraints, all of the described methods has not been implemented in this report.
-This report describes the implemented extension for fast generation of tree surfaces and textures.
+This report describes the implementation of said algorithms together with some extensions that were made to generate and render the trees with interactive framerates.
 
 \subsection{Tree generation}
 The tree is generated on the CPU using a multithreaded approach in critical parts of the implementation.
@@ -92,8 +99,8 @@ This allows for a dynamic and procedural growth producing unique trees over time
 
 \subsubsection{Environmental input}
 The presented method starts with environmental input where the environment around each existing bud is examined to determine the state for those parts of the tree.
-\citet{palubicki} presents two different techniques for handling the availability of growth in space around the tree and the optimal growth direction for branches.
-One is called \emph{space colonization} and the other is called \emph{shadow propagation}.
+\citet{Palubicki:2009:STM:1531326.1531364} presents two different techniques for handling the availability of growth in space around the tree and the optimal growth direction for branches.
+One is called space colonization and the other is called shadow propagation.
 
 Space colonization uses a uniform distribution of points in the world, each bud has an occupancy zone as well as a perception volume.
 When evaluating available space, available points within the perception volume are found.
@@ -109,7 +116,7 @@ When bud points are not contained within the grid, the size of the grid is doubl
 The data from the previous grid are copied into the resized grid together with the data from the new bud point.
 
 \subsubsection{Bud fate}
-The technique that were implemented is an extension to the Borchet-Honda model that is described in \citet{palubicki}.
+The technique that were implemented is an extension to the Borchet-Honda model that is described in \citet{Palubicki:2009:STM:1531326.1531364}.
 The bud fate is decided using the shadow value retrieved from the environmental input calculation for each bud.
 This value is then distributed towards the light accumalative producing the total light reached to each branch and its child branches.
 
@@ -163,6 +170,15 @@ The color is selected as different shades of green using the world position as l
 When running the application, the growth of the tree is displayed in the application view port.
 As the tree grows, leafs are dynamically added and moves as touched by a breeze.
 \autoref{fig:res_1tree} shows a screen capture of a single tree grown over 20 growth cycles.
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.4\textwidth]{treehole.png}
+	\caption{Problems in tree branch generation.}
+	\label{fig:res_treehole}
+\end{figure}
+
+The total time to grow the tree was 138ms and most of that time was spent adding points to the voxel grid.
+This is visualized in \autoref{fig:res_timingTotal} where the total time per growth cycle is shown and divided into the required steps performed when generating the tree.
 
 \begin{figure}[!htp]
 	\centering
@@ -171,8 +187,7 @@ As the tree grows, leafs are dynamically added and moves as touched by a breeze.
 	\label{fig:res_2tree}
 \end{figure}
 
-The total time to grow the tree was 138ms and most of that time was spent adding points to the voxel grid.
-This is visualized in \autoref{fig:res_timingTotal} where the total time per growth cycle is shown and divided into the required steps performed when generating the tree.
+The generated quads does not take the angle compared to parent and child branches which leads to holes in the mesh as is seen in \autoref{fig:res_treehole}.
 
 \begin{figure}[htp]
 	\centering
@@ -206,6 +221,8 @@ This could be resolved using the angle between the two branches when calculating
 A simple method could be to apply a scaled offset in the direction of the branch depending on the width of the branch but this could either introduce artefacts where branches intersect too much or still leave a gap.
 
 Because shred branch positions are kept it would be possible to add textures for shredded branches showing the interior of the tree to visualize that shredding has occured.
+
+After looking at the results, the generated trees achieves a decent level of detail and realism while working in real time with fast threaded generation.
 
 \bibliographystyle{abbrv}
 \bibliography{report}
