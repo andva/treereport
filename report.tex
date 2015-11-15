@@ -210,6 +210,8 @@ By multiplying with the branch width at the current edge of the branch $ w_{c} $
 The normal vector $ N_{i} $ is also stored at each of the edges.
 An index buffer is also used to omit some duplicate data per face and convert the vertex data that is stored per quad into triangles that can be used to render.
 
+Texture coordinates are calculated using two different levels of detail depending on the mean width of the current face of the branch.
+
 
 Texture coordinates are calculated using three different LODs depending on the width of the branch.
 The texture ID is stored together with the texture coordinate and to make sure that each branch receives an unique set of texture coordinates three atomic integers are used to give out positions in the texture map.
@@ -287,6 +289,9 @@ More work has to be made to make sure that branches are kept connected as their 
 As it is now, when two branches with a large angular difference are rendered, a hole is noticeable in the seam.
 This could be resolved using the angle between the two branches when calculating branch face positions to take this fact into consideration.
 A simple method could be to apply a scaled offset in the direction of the branch depending on the width of the branch but this could either introduce artefacts where branches intersect too much or still leave a gap.
+One way to achieve the correct result is to calculate the face edges once for each joint between two branches.
+The simplest method would be to use the same algorithm as is currently used but for each joint instead of each branch and write this to the vertex buffer and use the index buffer to correctly index into the vertex buffer.
+The only problem this would cause is that this would not make the current texture system work because it requires each face to have its own texture coordinates.
 
 Because shred branch positions are kept it would be possible to add textures for shredded branches showing the interior of the tree to visualize that shredding has occured.
 
