@@ -54,6 +54,30 @@
 \renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
 \renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
 
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=c,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
 %%% END Article customizations
 
 %%% The "real" document content comes below...
@@ -135,13 +159,57 @@ This requires that shred branches are stored so that the width of the tree does 
 \subsection{Rendering}
 To be able to visualize the tree and to produce an output as quickly as possible, shaders were used to produce a model.
 As the tree are done calculating the new state, the collection of branches are sent to the renderer.
-The renderer converts the tree data to a buffer of packed data and uploads it to a compute shader.
-The compute shader is responsible for converting the input data consisting of branch start points, end points and the width of the branch in each edge into quads.
-The amount of quads generated gets decided by an input uniform and produces that number of quads, complete with texture coordinates, positions and normals.
+After finishing computing the new branches after a production cycle, the tree data is uploaded to the GPU in a buffer of packed data.
+The data is uploaded per branch and consists of start and end positions and the width at each of the joints.
+A compute shader is responsible for converting the input data into a mesh with texture coordinates, positions and normals.
 
-The position of the faces belonging to each branch is calculated by extracting a vector that is perpendicular to the direction of the branch.
-The second edge of the quad is calculated by rotating the position around the branch axis by an amount so that all of the quads covers the full 360 degrees.
-Normals are received from the direction from the axis to each point.
+\begin{equation}
+	\label{eq:DelAlpha}
+	\Delta \alpha = \frac{2 \pi}{N_{e}}
+\end{equation}
+\begin{equation}
+	\label{eq:vdir}
+	v_{dir} = b_{s} - b_{e} 
+\end{equation}
+\begin{equation}
+	\label{eq:vcross}
+	v_{orth2} = v_{dir}\times v_{orth1}
+\end{equation}
+\begin{equation}
+	\label{eq:alphai}
+	\alpha_{i} = \sum_{j = 0}^{i}\Delta \alpha
+\end{equation}
+\begin{equation}
+	\label{eq:betai}
+	\N_{i} = sin(\alpha_{i}) \hat{v}_{orth2} + cos(\alpha_{i}) \hat{v}_{orth1}
+\end{equation}
+\begin{equation}
+	\label{eq:pi}
+	p_{i}=p_{c} +  \hat{\N}_{i} w_{c}
+\end{equation}
+
+The number of faces on each branch is decided by an uniform value $N_{e}$.
+This value is used to divide the angular space around the branch into segments to be represented with faces.
+The angular space $ \Delta \alpha $ that each face represents is calculated with equation \ref{eq:DelAlpha}.
+The branch direction $ v_{dir} $ is the difference between the branch start position $ b_{s} $
+and the branch end position $ b_{e} $ calculated in equation \ref{eq:vdir}.
+The first orthogonal vector $ v_{orth1} $ is calculated by flipping the parameters of the direction vector.
+
+\begin{lstlisting}
+vec3 orthogonal(in vec3 dir)
+{
+	return abs(dir.x) > abs(dir.z) ? 
+		vec3(-dir.y, dir.x, 0.0) : vec3(0.0, -dir.z, dir.y);
+}
+\end{lstlisting}
+
+Crossing the branch direction vector $ v_{dir} $ and the orthogonal vector $ v_{orth1} $ results in the second orthogonal vector.
+$ v_{orth1} $ and $ v_{orth2} $ is used as corners of a unit circle and the local position in unit space which is also the normal $ N_{i} $ is calculated using the current angle $ \alpha_{i} $ calculated as a sum of $ \Delta \alpha $ in equation \ref{eq:alphai} in a sin and a cosine term multiplied with normalized versions of the two orthogonal vectors.
+By multiplying with the branch width at the current edge of the branch $ w_{c} $ and adding the position of that point, the position is achieved.
+
+The normal vector $ N_{i} $ is also stored at each of the edges.
+An index buffer is also used to omit some duplicate data per face and convert the vertex data that is stored per quad into triangles that can be used to render.
+
 
 Texture coordinates are calculated using three different LODs depending on the width of the branch.
 The texture ID is stored together with the texture coordinate and to make sure that each branch receives an unique set of texture coordinates three atomic integers are used to give out positions in the texture map.
@@ -187,7 +255,7 @@ This is visualized in \autoref{fig:res_timingTotal} where the total time per gro
 	\label{fig:res_2tree}
 \end{figure}
 
-The generated quads does not take the angle compared to parent and child branches which leads to holes in the mesh as is seen in \autoref{fig:res_treehole}.
+The generated branch faces does not take the angle compared to parent and child branches which leads to holes in the mesh as is seen in \autoref{fig:res_treehole}.
 
 \begin{figure}[htp]
 	\centering
@@ -217,7 +285,7 @@ This would result in unique trees that still keep the detail at a high level.
 
 More work has to be made to make sure that branches are kept connected as their width increases.
 As it is now, when two branches with a large angular difference are rendered, a hole is noticeable in the seam.
-This could be resolved using the angle between the two branches when calculating quad positions to take this fact into consideration.
+This could be resolved using the angle between the two branches when calculating branch face positions to take this fact into consideration.
 A simple method could be to apply a scaled offset in the direction of the branch depending on the width of the branch but this could either introduce artefacts where branches intersect too much or still leave a gap.
 
 Because shred branch positions are kept it would be possible to add textures for shredded branches showing the interior of the tree to visualize that shredding has occured.
