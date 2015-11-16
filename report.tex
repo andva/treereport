@@ -19,6 +19,9 @@
 % \geometry{landscape} % set up the page for landscape
 %   read geometry.pdf for detailed page layout information
 
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{\baselineskip}
+
 \usepackage{caption}
 \usepackage{hyperref}
 
@@ -181,11 +184,11 @@ A compute shader is responsible for converting the input data into a mesh with t
 \end{equation}
 \begin{equation}
 	\label{eq:betai}
-	\N_{i} = sin(\alpha_{i}) \hat{v}_{orth2} + cos(\alpha_{i}) \hat{v}_{orth1}
+	N_{i} = sin(\alpha_{i}) \hat{v}_{orth2} + cos(\alpha_{i}) \hat{v}_{orth1}
 \end{equation}
 \begin{equation}
 	\label{eq:pi}
-	p_{i}=p_{c} +  \hat{\N}_{i} w_{c}
+	p_{i}=p_{c} +  \hat{N}_{i} w_{c}
 \end{equation}
 
 The number of faces on each branch is decided by an uniform value $N_{e}$.
@@ -205,17 +208,19 @@ vec3 orthogonal(in vec3 dir)
 
 Crossing the branch direction vector $ v_{dir} $ and the orthogonal vector $ v_{orth1} $ results in the second orthogonal vector.
 $ v_{orth1} $ and $ v_{orth2} $ is used as corners of a unit circle and the local position in unit space which is also the normal $ N_{i} $ is calculated using the current angle $ \alpha_{i} $ calculated as a sum of $ \Delta \alpha $ in equation \ref{eq:alphai} in a sin and a cosine term multiplied with normalized versions of the two orthogonal vectors.
-By multiplying with the branch width at the current edge of the branch $ w_{c} $ and adding the position of that point, the position is achieved.
+By multiplying with the branch width at the current edge of the branch $ w_{c} $ and adding the position on the branch $ p_{c} $, the position of the bark surface $ p_{i} $ is achieved.
 
 The normal vector $ N_{i} $ is also stored at each of the edges.
 An index buffer is also used to omit some duplicate data per face and convert the vertex data that is stored per quad into triangles that can be used to render.
 
 Texture coordinates are calculated using two different levels of detail depending on the mean width of the current face of the branch.
+These levels of detail are stored in the same texture and to give each face a separate set of texture coordinates depending on what LOD they are assigned, two atomic counters are used.
 
-
-Texture coordinates are calculated using three different LODs depending on the width of the branch.
-The texture ID is stored together with the texture coordinate and to make sure that each branch receives an unique set of texture coordinates three atomic integers are used to give out positions in the texture map.
-This causes a lot of texture space and allows for higher quality in the branches where it is useful.
+Atomic counters are integer objects that can be used to get unique ids in a multi thread environment.
+Each fragment can retrieve a ID from the counters that can be converted to a spot within the texture.
+The texture is built up with a upper half responsible for storing lower levels of detail and the lower part for higher levels of detail.
+The size of each texture segment is divided by four in the lower LOD compared to the size of the higher LOD.
+This makes it possible to have unique textures for each branch and describe the whole tree using a reasonably sized texture.
 
 The computed tree branches are then used to generate the texture map and a second shader pair consisting of a vertex shader and a fragment shader.
 The vertex shader outputs the texture coordinates as positions but also sends the world position of each fragment.
