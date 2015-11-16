@@ -223,11 +223,15 @@ The size of each texture segment is divided by four in the lower LOD compared to
 This makes it possible to have unique textures for each branch and describe the whole tree using a reasonably sized texture.
 
 The computed tree branches are then used to generate the texture map and a second shader pair consisting of a vertex shader and a fragment shader.
-The vertex shader outputs the texture coordinates as positions but also sends the world position of each fragment.
-These are then used as input to several noise functions that generates a diffuse map, normal map and displacement map of the tree bark.
+The vertex shader outputs the texture coordinates as positions which generates fragments for the texture of each tree branch.
+World positions are also sent to the compute shader to use in the noise functions that creates the diffuse, normal and displacement map of the tree bark.
 
 The tree is rendered using a tessellation shader that use the displacement map to offset the generated vertices to their correct location.
 The result is then drawn to the GBuffer using the diffuse and the normal texture to produce the final output.
+
+Leafs are also generated using a compute shader but updated each frame.
+Each leaf consists of two triangles creating a parallelogram with one of the edges in origo.
+The direction of the leaf is decided by the bud direction together with a noise term that changes over time.
 
 Leafs are produced in a similar fashion using the position of the metamers and the branch directions.
 The direction of the leafs are decided by weighing the gravity direction together with the branch direction to find the direction of the leaf.
