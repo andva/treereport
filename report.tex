@@ -140,7 +140,7 @@ Each newly formed bud adds a shadow value to the voxel grid in a pyramid below i
 This imitates a prenumbra shadow from each bud and as the shadow value increases, the probability for growth towards that specific voxel decreases.
 Optimal directions are calculated by finding the gradient of the shadow grid in the bud point to make it grow towards the direction where there is the most light.
 When bud points are not contained within the grid, the size of the grid is doubled in that direction until the resized grid covers the point.
-The data from the previous grid are copied into the resized grid together with the data from the new bud point.
+The data from the previous grid are copied into the resized grid together with the data from the new bud point.\cite{Palubicki:2009:STM:1531326.1531364}
 
 \subsubsection{Bud fate}
 The technique that were implemented is an extension to the Borchet-Honda model that is described by Palubicki et al.\cite{Palubicki:2009:STM:1531326.1531364}
@@ -152,12 +152,12 @@ The number of metamers produced by the bud is calculated as the light value floo
 \subsubsection{Shoots creation}
 The bud fate decides what shoots to add and their length.
 Metamers are added in an iterative fashion to the branches represented as a binary tree.
-Each branch has two childs, the terminal and the lateral branch.
+Each branch has two childs, the terminal and the lateral branch.\cite{Palubicki:2009:STM:1531326.1531364}
 
 \subsubsection{Branch width}
 The branch width is calculated by adding width back towards the root from the end branches of the tree.
 Each leaf adds a starting width that is accummulated back to the root as the tree grows.
-This requires that shred branches are stored so that the width of the tree does not change in width as branches are removed.
+This requires that shred branches are stored so that the width of the tree does not change in width as branches are removed.\cite{Palubicki:2009:STM:1531326.1531364}
 
 \subsection{Rendering}
 To be able to visualize the tree and to produce an output as quickly as possible, shaders were used to produce a model.
@@ -206,9 +206,19 @@ vec3 orthogonal(in vec3 dir)
 }
 \end{lstlisting}
 
-Crossing the branch direction vector $ v_{dir} $ and the orthogonal vector $ v_{orth1} $ results in the second orthogonal vector.
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.4\textwidth]{branchAngles.png}
+	\caption{Crossection of tree branch visualized with four edges.}
+	\label{fig:branchAngles}
+\end{figure}
+
+As is shown in equation \ref{eq:vcross}, crossing the branch direction vector $ v_{dir} $ and the orthogonal vector $ v_{orth1} $ results in the second orthogonal vector $ v_{orth2} $.
 $ v_{orth1} $ and $ v_{orth2} $ is used as corners of a unit circle and the local position in unit space which is also the normal $ N_{i} $ is calculated using the current angle $ \alpha_{i} $ calculated as a sum of $ \Delta \alpha $ in equation \ref{eq:alphai} in a sin and a cosine term multiplied with normalized versions of the two orthogonal vectors.
 By multiplying with the branch width at the current edge of the branch $ w_{c} $ and adding the position on the branch $ p_{c} $, the position of the bark surface $ p_{i} $ is achieved.
+This is visualized in \autoref{fig:branchAngles} that shows an example using four edges to represent the tree branch.
+The resulting geometry is shown in blue.
+
 
 The normal vector $ N_{i} $ is also stored at each of the edges.
 An index buffer is also used to omit some duplicate data per face and convert the vertex data that is stored per quad into triangles that can be used to render.
@@ -248,26 +258,10 @@ Normals are calculated by crossing the leaf direction with the first orthogonal 
 When running the application, the growth of the tree is displayed in the application view port.
 As the tree grows, leafs are dynamically added and moves as touched by a breeze.
 \autoref{fig:res_1tree} shows a screen capture of a single tree grown over 20 growth cycles.
-\begin{figure}[htp]
-	\centering
-	\includegraphics[width=0.4\textwidth]{treehole.png}
-	\caption{Problems in tree branch generation.}
-	\label{fig:res_treehole}
-\end{figure}
 
 The textures are without seams in both joints and between segments of the same branch.
 This is visible in \autoref{fig:closeup} where the tree are dividing into several branches.
 \autoref{fig:joints} shows the two LODs in action.
-
-The total time to grow the tree was 138ms and most of that time was spent adding points to the voxel grid.
-This is visualized in \autoref{fig:res_timingTotal} where the total time per growth cycle is shown and divided into the required steps performed when generating the tree.
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.4\textwidth]{2tree.png}
-	\caption{Two grown tree using the extended BH bud fate model.}
-	\label{fig:res_2tree}
-\end{figure}
 
 \begin{figure}[htp]
 	\centering
@@ -283,13 +277,30 @@ This is visualized in \autoref{fig:res_timingTotal} where the total time per gro
 	\label{fig:joints}
 \end{figure}
 
-The generated branch faces does not take the angle compared to parent and child branches which leads to holes in the mesh as is seen in \autoref{fig:res_treehole}.
+The total time to grow the tree was 138ms and most of that time was spent adding points to the voxel grid.
+This is visualized in \autoref{fig:res_timingTotal} where the total time per growth cycle is shown and divided into the required steps performed when generating the tree.
 
 \begin{figure}[htp]
 	\centering
 	\includegraphics[width=0.8\textwidth]{timingTotal.png}
 	\caption{Total simulation time per growth stage for a tree.}
 	\label{fig:res_timingTotal}
+\end{figure}
+
+The generated branch faces does not take the angle compared to parent and child branches which leads to holes in the mesh as is seen in \autoref{fig:res_treehole}.
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.4\textwidth]{treehole.png}
+	\caption{Problems in tree branch generation.}
+	\label{fig:res_treehole}
+\end{figure}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.4\textwidth]{2tree.png}
+	\caption{Two grown tree using the extended BH bud fate model.}
+	\label{fig:res_2tree}
 \end{figure}
 
 \autoref{fig:res_2tree} shows the same algorithm operating on two trees growing at the same time sharing grid.
